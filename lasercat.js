@@ -1,17 +1,7 @@
-var videoList = [
-	"Death Metal Rooster ft. Drumming Washing Machine.mp4",
-	"The original Technoviking video.mp4"
-
-];
-
-var videoTransitions = 
-[
-	"static.mp4"
-
-];
-
 // //
 
+videoList = new Array();
+videoTransitions = new Array();
 var video = document.getElementById('corevideo');
 var source = document.createElement('source');
 var baseurl = "videos/";
@@ -19,30 +9,55 @@ var transitionsurl = "videos/transitions/"
 var i = 0;
 var j = 0;
 
-source.setAttribute('src', baseurl + "first.mp4");
-
-video.appendChild(source);
-video.currentTime = 0.5;
-
-// wait 10 seconds for full screen
-// since full screen listener isn't working
-window.setTimeout(function() {
-
-	video.controls = false;
-	transitionVideo();
-
-}, 2000);
-
-
 video.addEventListener('ended', function() {
 	transitionVideo();
 }, false);
+
+$.ajax({
+  url: baseurl,
+  success: function(data){
+     $(data).find("a").each(function(){
+        // will loop through 
+        var avideo = $(this).attr("href")
+        if(avideo.indexOf('.') > -1)
+        {
+	        videoList.push(avideo)
+	        console.log("Found video: " + avideo);
+        }
+     });
+
+     shuffle(videoList);
+
+	source.setAttribute('src', 'first.mp4');
+	video.appendChild(source);
+	video.play();
+
+	// wait 10 seconds for full screen
+	// since full screen listener isn't working
+	window.setTimeout(function() {
+
+		video.controls = false;
+		transitionVideo();
+
+	}, 15000);
+  }
+});
+
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length; i; i--) {
+        j = Math.floor(Math.random() * i);
+        x = a[i - 1];
+        a[i - 1] = a[j];
+        a[j] = x;
+    }
+}
 
 function transitionVideo()
 {
 	// play a transition video video
 	video.loop = true;
-	changeVideo(videoTransitions[j], true);
+	//changeVideo(videoTransitions[j], true);
 
 	window.setTimeout(function() {
 
